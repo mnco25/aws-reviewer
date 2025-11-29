@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AWS CLF-C02 Reviewer</title>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YXWFT6CX2B"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YXWFT6CX2B');
+    </script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -313,6 +322,19 @@
     // --- APP COMPONENT ---
     const App = () => {
         const [screen, setScreen] = React.useState('settings'); 
+        
+        // --- 2. NOBEL-LEVEL ANALYTICS TRACKING (Added Here) ---
+        // This ensures every screen change (Quiz, Results) is counted!
+        React.useEffect(() => {
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'screen_view', {
+                    'screen_name': screen,
+                    'app_name': 'AWS Reviewer'
+                });
+            }
+        }, [screen]);
+        // -----------------------------------------------------
+
         const [numQuestions, setNumQuestions] = React.useState(''); 
         const [currentQIndex, setCurrentQIndex] = React.useState(0);
         const [answers, setAnswers] = React.useState({}); 
