@@ -130,6 +130,22 @@
 <script type="text/babel">
 
     // --- HELPER FUNCTIONS ---
+    
+    // 1. Fisher-Yates Shuffle Algorithm (The Industry Standard for Randomness)
+    const shuffleArray = (array) => {
+        let currentIndex = array.length, randomIndex;
+        // While there remain elements to shuffle.
+        while (currentIndex != 0) {
+            // Pick a remaining element.
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    };
+
+    // 2. Mix function uses shuffleArray for choices
     const mix = (correct, distractors, totalNeeded = 4) => {
         let pool = [...distractors];
         pool = pool.filter(d => !correct.includes(d));
@@ -139,7 +155,7 @@
             choices.push(pool[randIndex]);
             pool.splice(randIndex, 1);
         }
-        return choices.sort(() => Math.random() - 0.5);
+        return shuffleArray(choices); // Applied robust shuffle here
     };
 
     const CAT_MAP = {1: "Cloud Concepts", 2: "Security", 3: "Technology", 4: "Billing & Pricing"};
@@ -147,10 +163,9 @@
     // --- APP COMPONENT ---
     const App = () => {
         const [screen, setScreen] = React.useState('settings'); 
-        const [fullBank, setFullBank] = React.useState([]); // Dynamic Data Store
-        const [loading, setLoading] = React.useState(true); // Loading State
+        const [fullBank, setFullBank] = React.useState([]); 
+        const [loading, setLoading] = React.useState(true); 
         
-        // --- NOBEL-LEVEL ANALYTICS TRACKING ---
         React.useEffect(() => {
             if (typeof window.gtag === 'function') {
                 window.gtag('event', 'screen_view', {
@@ -160,7 +175,6 @@
             }
         }, [screen]);
 
-        // --- FETCH DATA FROM JSON ON MOUNT ---
         React.useEffect(() => {
             fetch('./questions.json')
                 .then(response => {
@@ -194,14 +208,13 @@
         const processedBank = React.useMemo(() => {
             if (!fullBank.length) return [];
             return fullBank.map(q => {
-                // Determine correct answers: comma-separated string or already array?
-                // The provided JSON has "a" as a string.
                 const correctArr = q.a.split(',').map(s => s.trim());
                 let choices;
                 if (q.d) {
                     choices = mix(correctArr, q.d, 4); 
                 } else {
-                    choices = [...correctArr];
+                    // Even if there are no distractors, shuffle the choices (e.g. if it's just "True/False" or multiselect)
+                    choices = shuffleArray([...correctArr]);
                 }
                 return { ...q, choices: choices, correct: correctArr };
             });
@@ -212,7 +225,6 @@
             const handleKeyDown = (e) => {
                 if (screen !== 'quiz') return;
 
-                // Options 1-9
                 if (e.key >= '1' && e.key <= '9') {
                     const idx = parseInt(e.key) - 1;
                     const currentQ = quizQuestions[currentQIndex];
@@ -221,7 +233,6 @@
                     }
                 }
 
-                // Enter (Check / Next)
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     const currentQ = quizQuestions[currentQIndex];
@@ -230,19 +241,16 @@
                     const required = currentQ.correct.length;
 
                     if (!currentAns?.isSubmitted && !examMode) {
-                        // Action: Check Answer
                         if (selectedCount === required) checkAnswer();
                     } else {
-                        // Action: Next Question or Finish
                         if (currentQIndex === quizQuestions.length - 1) handleFinishExam();
                         else setCurrentQIndex(p => p + 1);
                     }
                 }
 
-                // Backspace (Previous)
                 if (e.key === 'Backspace') {
                     if (currentQIndex > 0) {
-                        e.preventDefault(); // Prevent browser back
+                        e.preventDefault();
                         setCurrentQIndex(p => p - 1);
                     }
                 }
@@ -286,8 +294,9 @@
 
         const confirmStart = (mode) => {
             const n = parseInt(numQuestions);
-            // Use processedBank which is already up to date with fetched data
-            const shuffled = [...processedBank].sort(() => Math.random() - 0.5).slice(0, n);
+            // SHUFFLE QUESTIONS: Using robust shuffle for the question order
+            const shuffled = shuffleArray([...processedBank]).slice(0, n);
+            
             setQuizQuestions(shuffled);
             setScreen('quiz');
             setShowModal(false);
@@ -539,7 +548,6 @@
                                                     <div>
                                                         <span className="text-[10px] uppercase font-bold text-slate-500 block mb-1">Correct Answer</span>
                                                         <span className="text-green-400 block mb-1">{q.correct.join(', ')}</span>
-                                                        {/* ADDED EXPLANATION HERE */}
                                                         <span className="text-slate-400 text-xs italic block mt-2 border-t border-slate-700/50 pt-2">{q.e}</span>
                                                     </div>
                                                 )}
@@ -643,7 +651,8 @@
                         <h2 className="text-xl md:text-3xl font-semibold leading-relaxed mb-6 text-white">{currentQ.q}</h2>
                         {isMulti && (
                             <span className="text-xs font-bold text-orange-400 bg-orange-900/20 px-3 py-1.5 rounded border border-orange-900 self-start">
-                                SELECT {required} (Selected: {selectedCount})
+                                {/* REMOVED 'Selected: count' as requested */}
+                                SELECT {required}
                             </span>
                         )}
                     </div>
@@ -685,7 +694,6 @@
                     {currentAns?.isSubmitted && !currentAns.isCorrect && !examMode && (
                         <div className="bg-slate-800/80 border-l-4 border-blue-500 p-4 rounded-r-lg anim-enter">
                             <p className="text-slate-300 text-sm mb-1"><strong>Correct Answer:</strong> {currentQ.correct.join(", ")}</p>
-                            {/* ADDED EXPLANATION HERE */}
                             <p className="text-slate-400 text-xs italic">{currentQ.e}</p>
                         </div>
                     )}
