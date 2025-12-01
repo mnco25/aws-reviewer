@@ -14,7 +14,7 @@ A modern, high-performance web application designed to help you master the **AWS
 * **📊 Advanced Analytics:** Visual breakdown of your performance by exam domain (Cloud Concepts, Security, Technology, Billing) with pass/fail prediction.
 * **🎨 Modern Glassmorphism UI:** A sleek, dark-mode interface using Tailwind CSS and glass-panel aesthetics that looks great on **Desktop** and **Mobile**.
 * **⚡ Dynamic Question Bank:** Questions are loaded dynamically from `questions.json`. The app automatically detects the total number of questions available.
-* **⌨️ Power User Shortcuts:** Navigate the entire quiz using your keyboard (Numbers `1-4` to select, `Enter` to confirm, `Backspace` to go back).
+* **⌨️ Power User Shortcuts:** Navigate the entire quiz using your keyboard (Numbers `1-9` to select, `Enter` to confirm, `Backspace` to go back).
 * **💾 No Backend Required:** Runs entirely in the browser using React (CDN) and Babel. Deployable anywhere static files are hosted.
 
 ## 🚀 Getting Started
@@ -63,3 +63,46 @@ You can easily expand the question bank without touching the application code.
     "d": ["Wrong Answer 1", "Wrong Answer 2", "Wrong Answer 3"],
     "e": "Explanation of why the correct answer is correct."
 }
+````
+
+**Key:**
+
+  * `id`: Unique identifier (increment this number).
+  * `c`: Category ID (`1`=Cloud Concepts, `2`=Security, `3`=Technology, `4`=Billing).
+  * `q`: The Question text.
+  * `a`: The Correct Answer (must match one of the choices exactly).
+  * `d`: Distractors (incorrect answers).
+  * `e`: Explanation shown after answering.
+
+The application will **automatically** count the new questions and update the total bank size on the home screen.
+
+## ⌨️ Keyboard Shortcuts
+
+| Key | Action |
+| :--- | :--- |
+| **1 - 9** | Select Option |
+| **Enter** | Submit Answer / Next Question |
+| **Backspace** | Previous Question |
+
+## 🏗️ Tech Stack
+
+  * **Frontend Library:** [React 18](https://reactjs.org/) (via CDN)
+  * **Styling:** [Tailwind CSS](https://tailwindcss.com/) (via CDN)
+  * **Compiler:** [Babel](https://babeljs.io/) (Standalone)
+  * **Icons:** Inline SVG icons
+
+## 🤝 Contributing
+
+Contributions are welcome\! If you find an error in a question or want to improve the code:
+
+1.  Fork the Project.
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the Branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
+
+## 📝 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+**Created by Marc**
